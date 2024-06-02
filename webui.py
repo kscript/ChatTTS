@@ -7,7 +7,8 @@ import gradio as gr
 import numpy as np
 
 import ChatTTS
-
+from modelscope import snapshot_download
+model_dir = snapshot_download('mirror013/ChatTTS')
 
 def generate_seed():
     new_seed = random.randint(1, 100000000)
@@ -99,12 +100,18 @@ def main():
     print("loading ChatTTS model...")
     global chat
     chat = ChatTTS.Chat()
+    chat.load_models(
+        source="local",
+        local_path=model_dir,
+        compile=False,
+        device="cpu"
+    )
 
-    if args.local_path == None:
-        chat.load_models()
-    else:
-        print('local model path:', args.local_path)
-        chat.load_models('local', local_path=args.local_path)
+    # if args.local_path == None:
+    #     chat.load_models()
+    # else:
+    #     print('local model path:', args.local_path)
+    #     chat.load_models('local', local_path=args.local_path)
 
     demo.launch(server_name=args.server_name, server_port=args.server_port, inbrowser=True)
 
